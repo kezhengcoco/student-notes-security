@@ -41,9 +41,9 @@ def register():
         # "1", "123", or "password".
 
         # FIXED VERSION:
-        #
-        # if len(password) < 8:
-        #     return "Password must be at least 8 characters long."
+        
+        if len(password) < 8:
+             return "Password must be at least 8 characters long."
 
         connection = get_db_connection()
 
