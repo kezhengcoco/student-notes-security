@@ -106,5 +106,57 @@ def notes():
     )
 
 
+@app.route("/create-note", methods=["GET", "POST"])
+def create_note():
+
+    if "user_id" not in session:
+        return redirect("/login")
+
+    if request.method == "POST":
+
+        title = request.form["title"]
+        content = request.form["content"]
+
+        connection = get_db_connection()
+
+        connection.execute(
+            """
+            INSERT INTO notes (title, content, author_id)
+            VALUES (?, ?, ?)
+            """,
+            (
+                title,
+                content,
+                session["user_id"]
+            )
+        )
+
+        connection.commit()
+        connection.close()
+
+        return redirect("/notes")
+
+    return render_template("create_note.html")
+
+
+@app.route("/delete-note/<int:note_id>")
+def delete_note(note_id):
+
+    if "user_id" not in session:
+        return redirect("/login")
+
+    connection = get_db_connection()
+
+    connection.execute(
+        "DELETE FROM notes WHERE id = ?",
+        (note_id,)
+    )
+
+    connection.commit()
+    connection.close()
+
+    return redirect("/notes")
+
+
 if __name__ == "__main__":
     app.run(debug=True)
