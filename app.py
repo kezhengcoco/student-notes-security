@@ -168,10 +168,27 @@ def delete_note(note_id):
 
     connection = get_db_connection()
 
+    # =========================================
+    # FLAW 3: BROKEN ACCESS CONTROL / IDOR
+    # OWASP A01:2021 - Broken Access Control
+    # =========================================
+
+    # VULNERABLE VERSION:
+    # The application checks whether the user is logged in,
+    # but does not check whether the note belongs to that user.
+
     connection.execute(
         "DELETE FROM notes WHERE id = ?",
         (note_id,)
     )
+
+
+    # FIXED VERSION:
+    #
+    # connection.execute(
+    #     "DELETE FROM notes WHERE id = ? AND author_id = ?",
+    #     (note_id, session["user_id"])
+    # )
 
     connection.commit()
     connection.close()
