@@ -1,11 +1,109 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, session
+import sqlite3
 
 app = Flask(__name__)
+
+# This secret key is intentionally weak.
+# This will later be used as one of the security flaws.
+app.secret_key = "secret123"
+
+
+def get_db_connection():
+    connection = sqlite3.connect("notes.db")
+    connection.row_factory = sqlite3.Row
+    return connection
 
 
 @app.route("/")
 def home():
     return render_template("index.html")
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+
+    if request.method == "POST":
+
+        username = request.form["username"]
+        password = request.form["password"]
+
+        connection = get_db_connection()
+
+        try:
+            connection.execute(
+                "INSERT INTO users (username, password) VALUES (?, ?)",
+                (username, password)
+            )
+
+            connection.commit()
+
+        except sqlite3.IntegrityError:
+            connection.close()
+            return "Username already exists."
+
+        connection.close()
+
+        return redirect("/login")
+
+    return render_template("register.html")
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+
+    if request.method == "POST":
+
+        username = request.form["username"]
+        password = request.form["password"]
+
+        connection = get_db_connection()
+
+        user = connection.execute(
+            "SELECT * FROM users WHERE username = ? AND password = ?",
+            (username, password)
+        ).fetchone()
+
+        connection.close()
+
+        if user:
+
+            session["user_id"] = user["id"]
+            session["username"] = user["username"]
+            session["is_admin"] = user["is_admin"]
+
+            return redirect("/notes")
+
+        return "Invalid username or password."
+
+    return render_template("login.html")
+
+
+@app.route("/logout")
+def logout():
+
+    session.clear()
+
+    return redirect("/")
+
+
+@app.route("/notes")
+def notes():
+
+    if "user_id" not in session:
+        return redirect("/login")
+
+    connection = get_db_connection()
+
+    notes = connection.execute(
+        "SELECT * FROM notes"
+    ).fetchall()
+
+    connection.close()
+
+    return render_template(
+        "notes.html",
+        notes=notes
+    )
 
 
 if __name__ == "__main__":
