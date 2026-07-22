@@ -97,14 +97,21 @@ def login():
         
         user = connection.execute(query).fetchone()
         
-        
+                
         # FIXED VERSION:
-        # Use a parameterized query instead of string concatenation.
+        #
+        # from werkzeug.security import check_password_hash
         #
         # user = connection.execute(
-        #     "SELECT * FROM users WHERE username = ? AND password = ?",
-        #     (username, password)
+        #     "SELECT * FROM users WHERE username = ?",
+        #     (username,)
         # ).fetchone()
+        #
+        # if user and check_password_hash(
+        #     user["password"],
+        #     password
+        # ):
+        #     # Login successful
 
         connection.close()
 
