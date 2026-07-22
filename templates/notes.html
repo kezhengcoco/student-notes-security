@@ -24,11 +24,33 @@
 
         <article>
 
+        <!--
+            FLAW 2: STORED CROSS-SITE SCRIPTING (XSS)
+            OWASP A03:2021 - Injection
+        
+            VULNERABLE VERSION:
+            The safe filter disables automatic HTML escaping.
+            User-controlled content is rendered as HTML.
+        -->
+        
+        <h2>{{ note["title"] | safe }}</h2>
+        
+        <p>
+            {{ note["content"] | safe }}
+        </p>
+        
+        
+        <!--
+            FIXED VERSION:
+        
             <h2>{{ note["title"] }}</h2>
-
+        
             <p>
                 {{ note["content"] }}
             </p>
+        
+            Jinja2 automatically escapes HTML characters by default.
+        -->
 
             <p>
                 Author ID: {{ note["author_id"] }}
