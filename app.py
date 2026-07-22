@@ -22,9 +22,6 @@ def home():
 @app.route("/register", methods=["GET", "POST"])
 def register():
 
-@app.route("/register", methods=["GET", "POST"])
-def register():
-
     if request.method == "POST":
 
         username = request.form["username"]
@@ -43,31 +40,29 @@ def register():
         # Any password can be accepted, including:
         # "1", "123", or "password".
 
-
         # FIXED VERSION:
         #
         # if len(password) < 8:
         #     return "Password must be at least 8 characters long."
 
         connection = get_db_connection()
-        
+
         try:
-        
+
             # =========================================
             # FLAW 4: CRYPTOGRAPHIC FAILURES
             # OWASP A04:2021 - Cryptographic Failures
             # =========================================
-        
+
             # VULNERABLE VERSION:
             # The original password is stored directly
             # in the database without hashing.
-        
+
             connection.execute(
                 "INSERT INTO users (username, password) VALUES (?, ?)",
                 (username, password)
             )
-        
-        
+
             # FIXED VERSION:
             #
             # from werkzeug.security import generate_password_hash
@@ -78,7 +73,7 @@ def register():
             #     "INSERT INTO users (username, password) VALUES (?, ?)",
             #     (username, password_hash)
             # )
-        
+
             connection.commit()
 
         except sqlite3.IntegrityError:
@@ -90,7 +85,6 @@ def register():
         return redirect("/login")
 
     return render_template("register.html")
-
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
