@@ -22,11 +22,33 @@ def home():
 @app.route("/register", methods=["GET", "POST"])
 def register():
 
+@app.route("/register", methods=["GET", "POST"])
+def register():
+
     if request.method == "POST":
 
         username = request.form["username"]
         password = request.form["password"]
-        
+
+        # =========================================
+        # FLAW 5: WEAK PASSWORD POLICY
+        # OWASP A07:2021 - Identification and
+        # Authentication Failures
+        # =========================================
+
+        # VULNERABLE VERSION:
+        # No minimum password length or password
+        # strength validation is implemented.
+        #
+        # Any password can be accepted, including:
+        # "1", "123", or "password".
+
+
+        # FIXED VERSION:
+        #
+        # if len(password) < 8:
+        #     return "Password must be at least 8 characters long."
+
         connection = get_db_connection()
         
         try:
