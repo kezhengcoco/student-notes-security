@@ -58,10 +58,31 @@ def login():
 
         connection = get_db_connection()
 
-        user = connection.execute(
-            "SELECT * FROM users WHERE username = ? AND password = ?",
-            (username, password)
-        ).fetchone()
+        # ================================
+        # FLAW 1: SQL INJECTION
+        # OWASP A03: Injection
+        # ================================
+        
+        # VULNERABLE VERSION:
+        # User input is directly concatenated into the SQL query.
+        # This allows an attacker to manipulate the SQL statement.
+        
+        query = (
+            "SELECT * FROM users "
+            "WHERE username = '" + username +
+            "' AND password = '" + password + "'"
+        )
+        
+        user = connection.execute(query).fetchone()
+        
+        
+        # FIXED VERSION:
+        # Use a parameterized query instead of string concatenation.
+        #
+        # user = connection.execute(
+        #     "SELECT * FROM users WHERE username = ? AND password = ?",
+        #     (username, password)
+        # ).fetchone()
 
         connection.close()
 
