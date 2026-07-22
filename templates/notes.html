@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Notes</title>
+</head>
+<body>
+
+    <h1>Student Notes</h1>
+
+    <p>
+        Welcome, {{ session["username"] }}!
+    </p>
+
+    <p>
+        <a href="/create-note">Create a new note</a>
+        |
+        <a href="/logout">Logout</a>
+    </p>
+
+    <hr>
+
+    {% for note in notes %}
+
+        <article>
+
+            <h2>{{ note["title"] }}</h2>
+
+            <p>
+                {{ note["content"] }}
+            </p>
+
+            <p>
+                Author ID: {{ note["author_id"] }}
+            </p>
+
+            <a href="/delete-note/{{ note['id'] }}">
+                Delete this note
+            </a>
+
+        </article>
+
+        <hr>
+
+    {% endfor %}
+
+</body>
+</html>
