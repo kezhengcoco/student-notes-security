@@ -26,15 +26,37 @@ def register():
 
         username = request.form["username"]
         password = request.form["password"]
-
+        
         connection = get_db_connection()
-
+        
         try:
+        
+            # =========================================
+            # FLAW 4: CRYPTOGRAPHIC FAILURES
+            # OWASP A04:2021 - Cryptographic Failures
+            # =========================================
+        
+            # VULNERABLE VERSION:
+            # The original password is stored directly
+            # in the database without hashing.
+        
             connection.execute(
                 "INSERT INTO users (username, password) VALUES (?, ?)",
                 (username, password)
             )
-
+        
+        
+            # FIXED VERSION:
+            #
+            # from werkzeug.security import generate_password_hash
+            #
+            # password_hash = generate_password_hash(password)
+            #
+            # connection.execute(
+            #     "INSERT INTO users (username, password) VALUES (?, ?)",
+            #     (username, password_hash)
+            # )
+        
             connection.commit()
 
         except sqlite3.IntegrityError:
