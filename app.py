@@ -225,5 +225,20 @@ def delete_note(note_id):
     return redirect("/notes")
 
 
+# =========================================
+# FLAW 5: SECURITY MISCONFIGURATION
+# OWASP A05:2021 - Security Misconfiguration
+# =========================================
+
+# VULNERABLE VERSION:
+# Debug mode is enabled.
+# Detailed error information may be exposed to users.
+
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+# FIXED VERSION:
+#
+# if __name__ == "__main__":
+#     app.run(debug=False)
